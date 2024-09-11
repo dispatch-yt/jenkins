@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins-container
+    ports:
+      - "8080:8080"
+    networks:
+      - jenkins-demo-network
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker:/usr/bin/docker
+
+  ubuntu:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ubuntu-ssh-container
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker:/usr/bin/docker
+    networks:
+      - jenkins-demo-network
+    ports:
+      - "2222:22"  
+      - "8086:8084"  
+
+networks:
+  jenkins-demo-network:
+    driver: bridge
+
+volumes:
+  jenkins_home:
